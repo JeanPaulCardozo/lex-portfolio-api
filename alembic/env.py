@@ -16,6 +16,7 @@ load_dotenv()
 from lex_portfolio_api.database import base
 from lex_portfolio_api.models.users import User
 from lex_portfolio_api.models.profile import Profile
+from lex_portfolio_api.models.practice_area import PracticeArea
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
