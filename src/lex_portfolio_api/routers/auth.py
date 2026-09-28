@@ -4,10 +4,6 @@ from sqlalchemy.orm import Session
 from lex_portfolio_api.database import get_db
 from lex_portfolio_api.schemas.users import UserOut, UserCreate, Token
 from lex_portfolio_api.services import users_service
-from lex_portfolio_api.services.users_service import (
-    get_user_by_email,
-    authenticate_user,
-)
 from lex_portfolio_api.core.security import create_access_token
 from lex_portfolio_api.core.dependencies import get_current_user
 from lex_portfolio_api.models.users import User
@@ -21,7 +17,7 @@ router = APIRouter(prefix="/auth", tags=["auth"])
 
 @router.post("/register", response_model=UserOut, status_code=201)
 def register_user(user: UserCreate, db: Session = Depends(get_db)):
-    exist_user = get_user_by_email(db, user.email)
+    exist_user = users_service.get_user_by_email(db, user.email)
 
     if exist_user is not None:
         raise HTTPException(status_code=400, detail="User Already Registered")
@@ -37,7 +33,7 @@ def login_user(
     db: Session = Depends(get_db),
 ):
 
-    user = authenticate_user(db, form_data.username, form_data.password)
+    user = users_service.authenticate_user(db, form_data.username, form_data.password)
 
     if user is None:
         raise HTTPException(status_code=401, detail="Incorrect email or password")

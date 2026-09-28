@@ -18,15 +18,15 @@ class ProfileBase(BaseModel):
     title: str = Field(..., min_length=1)
     tagline: str = Field(..., min_length=1)
     headline: str = Field(..., min_length=1)
-    summary: str
-    location: str
-    email: EmailStr
-    notify_email: EmailStr
-    phone: str
-    whatsapp: str
-    linkedin: str
-    avatar_url: str
-    cv_url: str
+    summary: Optional[str] = None
+    location: Optional[str] = None
+    email: Optional[EmailStr] = None
+    notify_email: Optional[EmailStr] = None
+    phone: Optional[str] = None
+    whatsapp: Optional[str] = None
+    linkedin: Optional[str] = None
+    avatar_url: Optional[str] = None
+    cv_url: Optional[str] = None
     languages: list[str] = []
     bar_admissions: list[str] = []
     education: list[EducationItem] = []
