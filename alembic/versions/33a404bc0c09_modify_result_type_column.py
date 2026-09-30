@@ -22,7 +22,11 @@ depends_on: Union[str, Sequence[str], None] = None
 def upgrade() -> None:
     """Upgrade schema."""
     case_result_type = postgresql.ENUM(
-        "sentencia", "acuerdo", "archivo", "dictamen", "otro",
+        "sentencia",
+        "acuerdo",
+        "archivo",
+        "dictamen",
+        "otro",
         name="case_result_type",
     )
     case_result_type.create(op.get_bind(), checkfirst=True)
@@ -46,7 +50,11 @@ def downgrade() -> None:
         "Cases",
         "result_type",
         existing_type=postgresql.ENUM(
-            "sentencia", "acuerdo", "archivo", "dictamen", "otro",
+            "sentencia",
+            "acuerdo",
+            "archivo",
+            "dictamen",
+            "otro",
             name="case_result_type",
         ),
         type_=postgresql.ARRAY(sa.VARCHAR()),
