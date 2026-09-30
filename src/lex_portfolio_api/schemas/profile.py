@@ -45,5 +45,5 @@ class ProfileOut(ProfileBase):
     id: int
     user_id: int
 
-    class config:
+    class Config:
         from_attributes = True

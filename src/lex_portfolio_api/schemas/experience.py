@@ -40,5 +40,5 @@ class ExperienceOut(ExperienceBase):
     id: int
     user_id: int
 
-    class config:
-        from_attributes: True
+    class Config:
+        from_attributes = True

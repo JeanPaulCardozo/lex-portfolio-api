@@ -5,6 +5,7 @@ from lex_portfolio_api.routers.profile import router as profile_router
 from lex_portfolio_api.routers.practice_area import router as practice_area_router
 from lex_portfolio_api.routers.case import router as case_router
 from lex_portfolio_api.routers.experience import router as experience_router
+from lex_portfolio_api.routers.publication import router as publication_router
 
 from slowapi import _rate_limit_exceeded_handler
 from slowapi.errors import RateLimitExceeded
@@ -18,6 +19,7 @@ for router in (
     practice_area_router,
     case_router,
     experience_router,
+    publication_router,
 ):
     app.include_router(router)
 

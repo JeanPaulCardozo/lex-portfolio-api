@@ -7,11 +7,11 @@ import enum
 
 
 class CaseResultType(str, enum.Enum):
-    sentencia = "sentencia"
-    acuerdo = "acuerdo"
-    archivo = "archivo"
-    dictamen = "dictamen"
-    otro = "otro"
+    judgment = "sentencia"
+    settlement = "acuerdo"
+    dismissed = "archivo"
+    ruling = "dictamen"
+    other = "otro"
 
 
 class Case(base):

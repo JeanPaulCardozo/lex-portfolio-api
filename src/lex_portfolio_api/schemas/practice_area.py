@@ -28,5 +28,5 @@ class PracticeAreaOut(PracticeArea):
     user_id: int
     slug: str
 
-    class config:
-        from_attributes: True
+    class Config:
+        from_attributes = True
