@@ -10,6 +10,7 @@ from lex_portfolio_api.database import get_db
 from lex_portfolio_api.core.dependencies import get_current_user
 from lex_portfolio_api.models.users import User
 from lex_portfolio_api.services import practice_area_service
+from lex_portfolio_api.core.slugify import slugify
 
 router = APIRouter(prefix="/practice-areas", tags=["practice-areas"])
 
@@ -48,7 +49,7 @@ def create_practice_area(
     db: Session = Depends(get_db),
 ):
 
-    new_slug = practice_area_service.slugify(new_practice_area.name)
+    new_slug = slugify(new_practice_area.name)
     practice_area = practice_area_service.get_practice_area_by_slug(db, new_slug)
 
     if practice_area is not None:
@@ -76,7 +77,7 @@ def update_practice_area(
             status_code=403, detail="Not Authorized To Access this Practice Area"
         )
 
-    new_slug = practice_area_service.slugify(update_practice_area.name)
+    new_slug = slugify(update_practice_area.name)
     slug_owner = practice_area_service.get_practice_area_by_slug(db, new_slug)
 
     if slug_owner is not None and slug_owner.id != practice_area_id:

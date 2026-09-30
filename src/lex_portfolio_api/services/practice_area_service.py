@@ -6,8 +6,7 @@ from lex_portfolio_api.schemas.practice_area import (
     PracticeAreaUpdate,
 )
 
-import re
-import unicodedata
+from lex_portfolio_api.core.slugify import slugify
 
 
 def get_practice_area(db: Session, practice_area_id: int) -> PracticeArea | None:
@@ -29,12 +28,6 @@ def get_practice_areas(db: Session, user_id: int) -> list[PracticeArea] | None:
         .order_by(PracticeArea.order.asc())
         .all()
     )
-
-
-def slugify(name: str) -> str:
-    name = unicodedata.normalize("NFKD", name).encode("ascii", "ignore").decode()
-    name = name.strip().lower()
-    return re.sub(r"[^a-z0-9]+", "-", name).strip("-")
 
 
 def create_practice_area(
