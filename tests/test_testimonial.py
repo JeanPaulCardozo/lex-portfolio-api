@@ -26,7 +26,9 @@ def test_public_submit_rejects_rating_out_of_range(client):
 
 
 def test_public_submit_rejects_invalid_email(client):
-    resp = client.post("/testimonials/submit", json=_submit_payload(email="not-an-email"))
+    resp = client.post(
+        "/testimonials/submit", json=_submit_payload(email="not-an-email")
+    )
     assert resp.status_code == 422
 
 

@@ -1,5 +1,7 @@
 def test_register_creates_user(client, unique_email, password):
-    resp = client.post("/auth/register", json={"email": unique_email, "password": password})
+    resp = client.post(
+        "/auth/register", json={"email": unique_email, "password": password}
+    )
 
     assert resp.status_code == 201
     body = resp.json()
@@ -10,13 +12,17 @@ def test_register_creates_user(client, unique_email, password):
 
 def test_register_rejects_duplicate_email(client, unique_email, password):
     client.post("/auth/register", json={"email": unique_email, "password": password})
-    resp = client.post("/auth/register", json={"email": unique_email, "password": password})
+    resp = client.post(
+        "/auth/register", json={"email": unique_email, "password": password}
+    )
 
     assert resp.status_code == 400
 
 
 def test_register_rejects_short_password(client, unique_email):
-    resp = client.post("/auth/register", json={"email": unique_email, "password": "short"})
+    resp = client.post(
+        "/auth/register", json={"email": unique_email, "password": "short"}
+    )
 
     assert resp.status_code == 422
 

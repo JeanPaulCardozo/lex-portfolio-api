@@ -13,9 +13,7 @@ def _experience_payload(**overrides):
 
 
 def test_create_experience(client, auth_headers):
-    resp = client.post(
-        "/experience/", json=_experience_payload(), headers=auth_headers
-    )
+    resp = client.post("/experience/", json=_experience_payload(), headers=auth_headers)
 
     assert resp.status_code == 201
     assert resp.json()["start_date"] == "2018-01"
@@ -44,7 +42,9 @@ def test_create_experience_rejects_future_date(client, auth_headers):
 def test_list_experience_ordered_most_recent_first(client, auth_headers):
     client.post(
         "/experience/",
-        json=_experience_payload(org="Old job", start_date="2015-01", current=False, end_date="2017-12"),
+        json=_experience_payload(
+            org="Old job", start_date="2015-01", current=False, end_date="2017-12"
+        ),
         headers=auth_headers,
     )
     client.post(
@@ -85,7 +85,9 @@ def test_experience_not_owned_by_caller_is_forbidden(client, auth_headers):
     ).json()
 
     other_email = f"other_{uuid.uuid4().hex[:12]}@example.com"
-    client.post("/auth/register", json={"email": other_email, "password": "supersecret123"})
+    client.post(
+        "/auth/register", json={"email": other_email, "password": "supersecret123"}
+    )
     other_login = client.post(
         "/auth/login", data={"username": other_email, "password": "supersecret123"}
     )

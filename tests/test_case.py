@@ -18,7 +18,9 @@ def _case_payload(practice_area_id, **overrides):
     return payload
 
 
-def test_create_case_relates_to_practice_area_by_id(client, auth_headers, practice_area):
+def test_create_case_relates_to_practice_area_by_id(
+    client, auth_headers, practice_area
+):
     resp = client.post(
         "/cases/", json=_case_payload(practice_area["id"]), headers=auth_headers
     )
@@ -26,7 +28,9 @@ def test_create_case_relates_to_practice_area_by_id(client, auth_headers, practi
     assert resp.status_code == 201
     body = resp.json()
     assert body["practice_area_id"] == practice_area["id"]
-    assert body["result_type"] == "acuerdo"  # enum value on the wire, not the Python name
+    assert (
+        body["result_type"] == "acuerdo"
+    )  # enum value on the wire, not the Python name
     assert body["slug"] == "executive-process-full-payment-after-injunction"
 
 
@@ -41,7 +45,9 @@ def test_create_case_rejects_invalid_result_type(client, auth_headers, practice_
 
 
 def test_create_case_rejects_duplicate_slug(client, auth_headers, practice_area):
-    client.post("/cases/", json=_case_payload(practice_area["id"]), headers=auth_headers)
+    client.post(
+        "/cases/", json=_case_payload(practice_area["id"]), headers=auth_headers
+    )
     resp = client.post(
         "/cases/", json=_case_payload(practice_area["id"]), headers=auth_headers
     )
@@ -49,7 +55,9 @@ def test_create_case_rejects_duplicate_slug(client, auth_headers, practice_area)
     assert resp.status_code == 400
 
 
-def test_list_cases_filters_by_practice_area_and_year(client, auth_headers, practice_area):
+def test_list_cases_filters_by_practice_area_and_year(
+    client, auth_headers, practice_area
+):
     client.post(
         "/cases/",
         json=_case_payload(practice_area["id"], title="Case A", year=2023),
@@ -61,9 +69,7 @@ def test_list_cases_filters_by_practice_area_and_year(client, auth_headers, prac
         headers=auth_headers,
     )
 
-    resp = client.get(
-        "/cases/", params={"year": 2024}, headers=auth_headers
-    )
+    resp = client.get("/cases/", params={"year": 2024}, headers=auth_headers)
 
     assert resp.status_code == 200
     titles = [c["title"] for c in resp.json()]

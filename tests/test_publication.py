@@ -18,7 +18,9 @@ def test_create_publication(client, auth_headers):
 
     assert resp.status_code == 201
     body = resp.json()
-    assert body["kind"] == "articulo"  # enum wire value, not the Python name ("article")
+    assert (
+        body["kind"] == "articulo"
+    )  # enum wire value, not the Python name ("article")
     assert body["date"] == "2025-03-11"
 
 

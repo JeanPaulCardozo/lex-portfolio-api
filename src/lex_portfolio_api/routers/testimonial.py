@@ -1,4 +1,4 @@
-from fastapi import APIRouter, HTTPException, Depends
+from fastapi import APIRouter, HTTPException, Depends, Request
 
 from sqlalchemy.orm import Session
 
@@ -9,29 +9,45 @@ from lex_portfolio_api.schemas.testimonial import (
     TestimonialCreate,
     TestimonialCreateByPublic,
     TestimonialOut,
-    TestimonialPublicOut
+    TestimonialPublicOut,
 )
 from lex_portfolio_api.services import testimonial_service
 from lex_portfolio_api.database import get_db
-from lex_portfolio_api.core.dependencies import get_current_user, get_current_user_optional
+from lex_portfolio_api.core.dependencies import (
+    get_current_user,
+    get_current_user_optional,
+)
+from lex_portfolio_api.core.limiter import limiter
 
 router = APIRouter(prefix="/testimonials", tags=["testimonials"])
 
-@router.get("/",response_model=None, status_code=200)
-def get_testimonials(all: int = 0, db: Session = Depends(get_db), current_user: User | None = Depends(get_current_user_optional)):
-    if all: 
+
+@router.get("/", response_model=None, status_code=200)
+def get_testimonials(
+    all: int = 0,
+    db: Session = Depends(get_db),
+    current_user: User | None = Depends(get_current_user_optional),
+):
+    if all:
         if current_user is None:
             raise HTTPException(status_code=403, detail="Not authenticated")
         testimonials = testimonial_service.get_all_testimonials(db, current_user.id)
-        return [TestimonialOut.model_validate(testimonial) for testimonial in testimonials]
+        return [
+            TestimonialOut.model_validate(testimonial) for testimonial in testimonials
+        ]
 
     testimonials = testimonial_service.get_testimonials(db)
-    return [TestimonialPublicOut.model_validate(testimonial) for testimonial in testimonials]
-    
+    return [
+        TestimonialPublicOut.model_validate(testimonial) for testimonial in testimonials
+    ]
+
 
 @router.post("/submit", response_model=dict[str, bool], status_code=201)
+@limiter.limit("5/minute")
 def create_testimonial_by_public(
-    testimonial_schema: TestimonialCreateByPublic, db: Session = Depends(get_db)
+    request: Request,
+    testimonial_schema: TestimonialCreateByPublic,
+    db: Session = Depends(get_db),
 ):
     user = db.query(User).first()
 

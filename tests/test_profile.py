@@ -37,7 +37,9 @@ def test_update_profile_partial_update_keeps_other_fields(client, auth_headers):
     client.patch("/profile/", json=base_payload, headers=auth_headers)
 
     resp = client.patch(
-        "/profile/", json={**base_payload, "title": "Senior Lawyer"}, headers=auth_headers
+        "/profile/",
+        json={**base_payload, "title": "Senior Lawyer"},
+        headers=auth_headers,
     )
 
     assert resp.status_code == 200

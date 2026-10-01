@@ -1,4 +1,4 @@
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, ConfigDict
 from typing import Optional
 
 from lex_portfolio_api.models.case import CaseResultType
@@ -33,5 +33,4 @@ class CaseOut(CaseBase):
     user_id: int
     slug: str
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)

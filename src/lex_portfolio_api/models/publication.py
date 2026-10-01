@@ -17,7 +17,13 @@ class Publication(base):
 
     id = Column(Integer, primary_key=True, index=True)
     title = Column(String, nullable=False)
-    kind = Column(Enum(KindType, name="publication_kind_type"))
+    kind = Column(
+        Enum(
+            KindType,
+            name="publication_kind_type",
+            values_callable=lambda enum_cls: [kind.value for kind in enum_cls],
+        )
+    )
     venue = Column(String)
     date = Column(String)
     url = Column(String)
