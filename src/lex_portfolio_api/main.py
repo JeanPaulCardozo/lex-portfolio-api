@@ -12,7 +12,16 @@ from slowapi import _rate_limit_exceeded_handler
 from slowapi.errors import RateLimitExceeded
 from lex_portfolio_api.core.limiter import limiter
 
+from fastapi.middleware.cors import CORSMiddleware
+
 app = FastAPI(title="Lex Portfolio API")
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["https://jeanpaulcardozo.github.io"],
+    allow_methods=["*"],
+    allow_headers=["Authorization", "Content-Type"]
+)
 
 for router in (
     auth_router,

@@ -26,7 +26,8 @@ Bearer para crear, editar y borrar contenido.
 - **PostgreSQL** (Supabase en desarrollo) — se usan tipos nativos de Postgres
   (`ARRAY`, `JSONB`, `ENUM`), así que no es compatible con SQLite
 - **JWT** vía `python-jose`, contraseñas con `passlib[bcrypt]`
-- **slowapi** para rate-limiting (`/auth/login`: 5 intentos por minuto)
+- **slowapi** para rate-limiting (`/auth/login` y `/testimonials/submit`: 5 intentos por minuto)
+- **CORS** restringido por origen (`CORSMiddleware` en `main.py`) — solo el dominio del frontend puede llamar a la API desde el navegador
 - **uv** como gestor de paquetes y entorno virtual
 - **pytest** + `httpx`/`TestClient` para las pruebas
 
@@ -127,6 +128,74 @@ Notas puntuales:
   `status` que venga en el cuerpo: siempre se guarda como pendiente de
   revisión.
 
+### Ejemplo rápido de uso
+
+Un recorrido completo con `curl`: crear un usuario, loguearte, usar el token
+para crear contenido, y consultar lo público sin token.
+
+**1. Registrarte** (una sola vez; luego solo haces login):
+```bash
+curl -X POST http://localhost:8000/auth/register \
+  -H "Content-Type: application/json" \
+  -d '{"email": "abogada@example.com", "password": "unaClaveSegura123"}'
+```
+
+**2. Iniciar sesión** — nota que este endpoint recibe *form data*, no JSON
+(es el estándar OAuth2 que usa FastAPI), y el campo del correo se llama
+`username` aunque sea un email:
+```bash
+curl -X POST http://localhost:8000/auth/login \
+  -d "username=abogada@example.com&password=unaClaveSegura123"
+```
+Respuesta:
+```jsonc
+{ "access_token": "eyJhbGciOiJIUzI1NiIs...", "token_type": "bearer" }
+```
+Guarda ese `access_token` — lo vas a necesitar en cada ruta privada, en el
+encabezado `Authorization: Bearer <token>`.
+
+**3. Crear una ruta privada** (ejemplo: un área de práctica), usando el token:
+```bash
+curl -X POST http://localhost:8000/practice-areas/ \
+  -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIs..." \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "Derecho laboral",
+    "summary": "Reclamaciones y despidos",
+    "description": "...",
+    "fags": []
+  }'
+```
+La respuesta trae el `id` que acaba de asignar la base de datos — lo vas a
+necesitar para crear un caso relacionado a esa área (`practice_area_id`).
+
+**4. Consultar una ruta pública, sin token** (lo que vería el sitio público):
+```bash
+curl http://localhost:8000/testimonials/
+```
+
+**5. Enviar un testimonio como visitante, sin token** (lo que haría el
+formulario público del sitio):
+```bash
+curl -X POST http://localhost:8000/testimonials/submit \
+  -H "Content-Type: application/json" \
+  -d '{
+    "author": "Laura Méndez",
+    "author_role": "Sector comercio",
+    "quote": "Me explicó todo con claridad.",
+    "rating": 5,
+    "email": "laura@example.com"
+  }'
+```
+Queda guardado como pendiente de revisión; el titular lo aprueba desde el
+panel con `PATCH /testimonials/{id}/status`.
+
+**Documentación interactiva:** con el servidor corriendo, FastAPI genera sola
+una página para probar todos los endpoints desde el navegador, en
+`http://localhost:8000/docs` (Swagger UI) — ahí puedes autenticarte una vez
+(botón "Authorize") y probar las rutas privadas sin tener que copiar el token
+a mano en cada `curl`.
+
 ---
 
 ## English
@@ -147,7 +216,8 @@ and delete content.
   Postgres-only types (`ARRAY`, `JSONB`, native `ENUM`), so SQLite is not an
   option
 - **JWT** via `python-jose`, password hashing with `passlib[bcrypt]`
-- **slowapi** for rate limiting (`/auth/login`: 5 attempts per minute)
+- **slowapi** for rate limiting (`/auth/login` and `/testimonials/submit`: 5 attempts per minute)
+- **CORS** restricted by origin (`CORSMiddleware` in `main.py`) — only the frontend's domain can call the API from a browser
 - **uv** as the package/virtualenv manager
 - **pytest** + `httpx`/`TestClient` for the test suite
 
@@ -246,3 +316,70 @@ A few specific notes:
   not-in-the-future checks happen in the Pydantic schema.
 - A testimonial sent through `/testimonials/submit` **ignores** any
   `status` present in the request body: it is always saved pending review.
+
+### Quick usage example
+
+A full walkthrough with `curl`: create a user, log in, use the token to
+create content, and query public data without a token.
+
+**1. Register** (one time only; after that you just log in):
+```bash
+curl -X POST http://localhost:8000/auth/register \
+  -H "Content-Type: application/json" \
+  -d '{"email": "lawyer@example.com", "password": "aSecurePassword123"}'
+```
+
+**2. Log in** — note this endpoint takes *form data*, not JSON (it's the
+standard OAuth2 flow FastAPI uses), and the email field is called
+`username` even though it's an email address:
+```bash
+curl -X POST http://localhost:8000/auth/login \
+  -d "username=lawyer@example.com&password=aSecurePassword123"
+```
+Response:
+```jsonc
+{ "access_token": "eyJhbGciOiJIUzI1NiIs...", "token_type": "bearer" }
+```
+Save that `access_token` — you'll need it on every private route, in the
+`Authorization: Bearer <token>` header.
+
+**3. Call a private route** (example: create a practice area) using the token:
+```bash
+curl -X POST http://localhost:8000/practice-areas/ \
+  -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIs..." \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "Labor law",
+    "summary": "Claims and wrongful termination",
+    "description": "...",
+    "fags": []
+  }'
+```
+The response includes the `id` the database just assigned — you'll need it
+to create a case related to that area (`practice_area_id`).
+
+**4. Call a public route, no token** (what the public site would see):
+```bash
+curl http://localhost:8000/testimonials/
+```
+
+**5. Submit a testimonial as a visitor, no token** (what the site's public
+form would do):
+```bash
+curl -X POST http://localhost:8000/testimonials/submit \
+  -H "Content-Type: application/json" \
+  -d '{
+    "author": "Laura Mendez",
+    "author_role": "Commerce sector",
+    "quote": "They explained everything clearly.",
+    "rating": 5,
+    "email": "laura@example.com"
+  }'
+```
+It's saved pending review; the lawyer approves it from the admin panel via
+`PATCH /testimonials/{id}/status`.
+
+**Interactive docs:** with the server running, FastAPI auto-generates a page
+to try every endpoint from the browser, at `http://localhost:8000/docs`
+(Swagger UI) — authenticate once there (the "Authorize" button) and test
+private routes without copying the token by hand into every `curl` call.
