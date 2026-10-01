@@ -18,7 +18,7 @@ app = FastAPI(title="Lex Portfolio API")
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["https://jeanpaulcardozo.github.io"],
+    allow_origins=["https://jeanpaulcardozo.github.io","http://localhost:5173"],
     allow_methods=["*"],
     allow_headers=["Authorization", "Content-Type"]
 )
