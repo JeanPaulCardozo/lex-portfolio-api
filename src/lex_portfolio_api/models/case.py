@@ -22,7 +22,14 @@ class Case(base):
     title = Column(String, nullable=False)
     year = Column(Integer, nullable=False)
     role = Column(String)
-    result_type = Column(Enum(CaseResultType, name="case_result_type"), nullable=False)
+    result_type = Column(
+        Enum(
+            CaseResultType,
+            name="case_result_type",
+            values_callable=lambda enum_cls: [member.value for member in enum_cls],
+        ),
+        nullable=False,
+    )
     outcome = Column(String, nullable=False)
     situation = Column(String)
     action = Column(String)
