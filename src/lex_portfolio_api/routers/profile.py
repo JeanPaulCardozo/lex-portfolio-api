@@ -11,10 +11,8 @@ router = APIRouter(prefix="/profile", tags=["profile"])
 
 
 @router.get("/", response_model=ProfileOut, status_code=200)
-def get_profile(
-    current_user: User = Depends(get_current_user), db: Session = Depends(get_db)
-):
-    profile_info = profile_service.get_profile(db, current_user.id)
+def get_profile(db: Session = Depends(get_db)):
+    profile_info = profile_service.get_profile(db)
 
     if profile_info is None:
         raise HTTPException(status_code=404, detail="Profile not found")

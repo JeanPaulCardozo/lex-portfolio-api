@@ -4,13 +4,8 @@ from lex_portfolio_api.models.publication import Publication
 from lex_portfolio_api.schemas.publication import PublicationCreate, PublicationUpdate
 
 
-def get_publications(db: Session, user_id: int) -> list[Publication] | None:
-    return (
-        db.query(Publication)
-        .filter(Publication.user_id == user_id)
-        .order_by(Publication.date.desc())
-        .all()
-    )
+def get_publications(db: Session) -> list[Publication] | None:
+    return db.query(Publication).order_by(Publication.date.desc()).all()
 
 
 def get_publication(db: Session, publication_id: int) -> Publication | None:

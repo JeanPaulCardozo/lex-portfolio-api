@@ -9,13 +9,12 @@ from lex_portfolio_api.core.slugify import slugify
 
 def get_cases(
     db: Session,
-    user_id: int,
     practice_area_id: int | None = None,
     year: int | None = None,
     result_type: CaseResultType | None = None,
     query: str | None = None,
 ) -> list[Case]:
-    current_query = db.query(Case).filter(Case.user_id == user_id)
+    current_query = db.query(Case)
 
     if practice_area_id is not None:
         current_query = current_query.filter(Case.practice_area_id == practice_area_id)

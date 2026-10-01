@@ -4,13 +4,8 @@ from lex_portfolio_api.models.experience import Experience
 from lex_portfolio_api.schemas.experience import ExperienceCreate, ExperienceUpdate
 
 
-def get_experiences(db: Session, user_id: int) -> list[Experience] | None:
-    return (
-        db.query(Experience)
-        .filter(Experience.user_id == user_id)
-        .order_by(Experience.start_date.desc())
-        .all()
-    )
+def get_experiences(db: Session) -> list[Experience] | None:
+    return db.query(Experience).order_by(Experience.start_date.desc()).all()
 
 
 def get_experience(db: Session, experience_id: int) -> Experience | None:

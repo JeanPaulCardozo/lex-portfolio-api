@@ -21,28 +21,16 @@ def list_cases(
     result_type: CaseResultType = None,
     query: str = None,
     db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user),
 ):
-    return case_service.get_cases(
-        db, current_user.id, practice_area_id, year, result_type, query
-    )
+    return case_service.get_cases(db, practice_area_id, year, result_type, query)
 
 
 @router.get("/{slug}", response_model=CaseOut, status_code=200)
-def get_case_by_slug(
-    slug: str,
-    db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user),
-):
+def get_case_by_slug(slug: str, db: Session = Depends(get_db)):
     case = case_service.get_case_by_slug(db, slug)
 
     if case is None:
         raise HTTPException(status_code=404, detail="Case Not Found")
-
-    if case.user_id != current_user.id:
-        raise HTTPException(
-            status_code=403, detail="Not Authorized To Access This Case"
-        )
 
     return case
 

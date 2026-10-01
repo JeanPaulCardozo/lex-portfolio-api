@@ -16,10 +16,8 @@ router = APIRouter(prefix="/publications", tags=["publications"])
 
 
 @router.get("/", response_model=list[PublicationOut], status_code=200)
-def get_publications(
-    db: Session = Depends(get_db), current_user: User = Depends(get_current_user)
-):
-    return publication_service.get_publications(db, current_user.id)
+def get_publications(db: Session = Depends(get_db)):
+    return publication_service.get_publications(db)
 
 
 @router.post("/", response_model=PublicationOut, status_code=201)

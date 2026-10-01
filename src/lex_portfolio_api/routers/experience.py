@@ -15,10 +15,8 @@ router = APIRouter(prefix="/experience", tags=["experience"])
 
 
 @router.get("/", response_model=list[ExperienceOut], status_code=200)
-def get_experiences(
-    db: Session = Depends(get_db), current_user: User = Depends(get_current_user)
-):
-    return experience_service.get_experiences(db, current_user.id)
+def get_experiences(db: Session = Depends(get_db)):
+    return experience_service.get_experiences(db)
 
 
 @router.post("/", response_model=ExperienceOut, status_code=201)

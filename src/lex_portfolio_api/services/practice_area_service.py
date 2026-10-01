@@ -21,13 +21,8 @@ def get_practice_area_by_slug(
     )
 
 
-def get_practice_areas(db: Session, user_id: int) -> list[PracticeArea] | None:
-    return (
-        db.query(PracticeArea)
-        .filter(PracticeArea.user_id == user_id)
-        .order_by(PracticeArea.order.asc())
-        .all()
-    )
+def get_practice_areas(db: Session) -> list[PracticeArea] | None:
+    return db.query(PracticeArea).order_by(PracticeArea.order.asc()).all()
 
 
 def create_practice_area(

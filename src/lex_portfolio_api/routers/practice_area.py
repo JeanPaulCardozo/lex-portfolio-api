@@ -16,16 +16,13 @@ router = APIRouter(prefix="/practice-areas", tags=["practice-areas"])
 
 
 @router.get("/", response_model=list[PracticeAreaOut], status_code=200)
-def get_all_practice_areas(
-    current_user: User = Depends(get_current_user), db: Session = Depends(get_db)
-):
-    return practice_area_service.get_practice_areas(db, current_user.id)
+def get_all_practice_areas(db: Session = Depends(get_db)):
+    return practice_area_service.get_practice_areas(db)
 
 
 @router.get("/{slug}", response_model=PracticeAreaOut, status_code=200)
 def get_practice_area_by_slug(
     slug: str,
-    current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
 
@@ -33,11 +30,6 @@ def get_practice_area_by_slug(
 
     if practice_area is None:
         raise HTTPException(status_code=404, detail="Practice Area Not Found")
-
-    if practice_area.user_id != current_user.id:
-        raise HTTPException(
-            status_code=403, detail="Not Authorized To Access This Practice Area"
-        )
 
     return practice_area
 

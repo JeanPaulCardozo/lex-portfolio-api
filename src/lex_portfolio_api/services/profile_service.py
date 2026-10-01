@@ -4,8 +4,8 @@ from lex_portfolio_api.schemas.profile import CreateProfile, UpdateProfile
 from lex_portfolio_api.models.profile import Profile
 
 
-def get_profile(db: Session, user_id: int) -> Profile | None:
-    return db.query(Profile).filter(Profile.user_id == user_id).first()
+def get_profile(db: Session) -> Profile | None:
+    return db.query(Profile).first()
 
 
 def update_profile(
