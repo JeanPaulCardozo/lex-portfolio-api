@@ -5,6 +5,9 @@ FastAPI, SQLAlchemy and PostgreSQL. It is the real backend that will replace
 the mock/localStorage data layer used by the [lex-portfolio](../lex-portfolio)
 frontend, following the contract described in that project's `API_CONTRACT.md`.
 
+**Live API / API en vivo:** https://lex-portfolio-api-production.up.railway.app
+· **Interactive docs / Documentación interactiva:** https://lex-portfolio-api-production.up.railway.app/docs
+
 **Languages / Idiomas:** [Español](#español) · [English](#english)
 
 ---
