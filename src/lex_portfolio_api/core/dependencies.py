@@ -8,27 +8,39 @@ from lex_portfolio_api.core.security import decode_access_token
 from lex_portfolio_api.services.users_service import get_user_by_id
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth/login")
+oauth2_scheme_optional = OAuth2PasswordBearer(tokenUrl="auth/login", auto_error=False)
+
+
+def _resolve_user_from_token(token: str | None, db: Session) -> User | None:
+    if token is None:
+        return None
+
+    payload = decode_access_token(token)
+    if payload is None:
+        return None
+
+    user_id = payload.get("sub")
+    if user_id is None:
+        return None
+
+    return get_user_by_id(db, user_id)
 
 
 def get_current_user(
     token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)
 ) -> User:
-    creadentials_exception = HTTPException(
-        status_code=status.HTTP_401_UNAUTHORIZED,
-        headers={"WWW-Authenticate": "Bearer"},
-    )
 
-    payload = decode_access_token(token)
-
-    if payload is None:
-        return creadentials_exception
-
-    user_id = payload.get("sub")
-    if user_id is None:
-        return creadentials_exception
-
-    user = get_user_by_id(db, user_id)
+    user = _resolve_user_from_token(token, db)
     if user is None:
-        return creadentials_exception
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            headers={"WWW-Authenticate": "Bearer"},
+        )
 
     return user
+
+
+def get_current_user_optional(
+    token: str | None = Depends(oauth2_scheme_optional), db: Session = Depends(get_db)
+) -> User | None:
+    return _resolve_user_from_token(token, db)
