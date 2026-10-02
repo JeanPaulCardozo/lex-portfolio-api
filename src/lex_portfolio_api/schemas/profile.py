@@ -1,4 +1,4 @@
-from pydantic import BaseModel, EmailStr, Field, ConfigDict
+from pydantic import BaseModel, EmailStr, Field, ConfigDict, field_validator
 from typing import Optional
 
 
@@ -31,6 +31,11 @@ class ProfileBase(BaseModel):
     bar_admissions: list[str] = []
     education: list[EducationItem] = []
     stats: list[StatItem] = []
+
+    @field_validator("email", "notify_email", mode="before")
+    @classmethod
+    def empty_string_to_none(cls, value):
+        return value or None
 
 
 class CreateProfile(ProfileBase):
