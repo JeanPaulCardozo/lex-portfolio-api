@@ -2,7 +2,7 @@ from sqlalchemy.orm import Session
 
 from lex_portfolio_api.models.publication import Publication
 from lex_portfolio_api.schemas.publication import PublicationCreate, PublicationUpdate
-
+from lex_portfolio_api.core.slugify import slugify
 
 def get_publications(db: Session) -> list[Publication] | None:
     return db.query(Publication).order_by(Publication.date.desc()).all()
@@ -11,11 +11,14 @@ def get_publications(db: Session) -> list[Publication] | None:
 def get_publication(db: Session, publication_id: int) -> Publication | None:
     return db.query(Publication).filter(Publication.id == publication_id).first()
 
+def get_publication_by_slug(db: Session, slug: str) -> Publication | None:
+    return db.query(Publication).filter(Publication.slug == slug).first()
 
 def create_publication(
     db: Session, publication_schema: PublicationCreate, user_id: int
 ) -> Publication:
     new_publication = Publication(
+        slug=slugify(publication_schema.title),
         title=publication_schema.title,
         kind=publication_schema.kind,
         venue=publication_schema.venue,
@@ -37,6 +40,9 @@ def update_publication(
 ) -> Publication:
     publication = get_publication(db, publication_id)
     new_data = publication_schema.model_dump(exclude_unset=True)
+
+    if "title" in new_data:
+        new_data["slug"] = slugify(new_data["title"])
 
     for label, value in new_data.items():
         setattr(publication, label, value)

@@ -11,7 +11,7 @@ def get_profile(db: Session) -> Profile | None:
 def update_profile(
     db: Session, update_profile_schema: UpdateProfile, user_id: int
 ) -> Profile:
-    profile = get_profile(db, user_id)
+    profile = get_profile(db)
     new_info = update_profile_schema.model_dump(exclude_unset=True)
 
     if profile is None:

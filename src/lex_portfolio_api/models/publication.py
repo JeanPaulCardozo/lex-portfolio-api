@@ -16,6 +16,7 @@ class Publication(base):
     __tablename__ = "Publications"
 
     id = Column(Integer, primary_key=True, index=True)
+    slug = Column(String, nullable=False, index=True, unique=True)
     title = Column(String, nullable=False)
     kind = Column(
         Enum(

@@ -11,6 +11,7 @@ from lex_portfolio_api.schemas.publication import (
 )
 from lex_portfolio_api.services import publication_service
 from lex_portfolio_api.database import get_db
+from lex_portfolio_api.core.slugify import slugify
 
 router = APIRouter(prefix="/publications", tags=["publications"])
 
@@ -19,6 +20,9 @@ router = APIRouter(prefix="/publications", tags=["publications"])
 def get_publications(db: Session = Depends(get_db)):
     return publication_service.get_publications(db)
 
+@router.get("/{slug}", response_model=PublicationOut, status_code=200)
+def get_publication_by_slug(slug: str,db: Session = Depends(get_db)):
+    return publication_service.get_publication_by_slug(db,slug)
 
 @router.post("/", response_model=PublicationOut, status_code=201)
 def create_publication(
@@ -45,6 +49,13 @@ def update_publication(
         raise HTTPException(
             status_code=403, detail="Not Authorized To Access This Publication"
         )
+
+    new_slug = slugify(publication.title)
+    publication_by_slug = publication_service.get_publication_by_slug(db, new_slug)
+
+    if publication_by_slug is not None and publication_by_slug.id != publication_id:
+        raise HTTPException(status_code=400, detail="Publication Already Exists")
+
 
     return publication_service.update_publication(db, publication, publication_id)
 
