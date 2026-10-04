@@ -17,6 +17,10 @@ router = APIRouter(prefix="/auth", tags=["auth"])
 
 @router.post("/register", response_model=UserOut, status_code=201)
 def register_user(user: UserCreate, db: Session = Depends(get_db)):
+
+    if users_service.any_user_exists(db):
+        raise HTTPException(status_code=403,detail="Registration is closed")
+
     exist_user = users_service.get_user_by_email(db, user.email)
 
     if exist_user is not None:
@@ -46,3 +50,5 @@ def login_user(
 @router.get("/me", response_model=UserOut, status_code=200)
 def read_current_user(current_user: User = Depends(get_current_user)):
     return current_user
+
+
