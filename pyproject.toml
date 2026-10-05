@@ -17,6 +17,7 @@ dependencies = [
     "pydantic>=2.13.5",
     "pytest>=9.1.1",
     "python-jose[cryptography]>=3.5.0",
+    "resend>=2.49.1",
     "slowapi>=0.1.10",
     "sqlalchemy>=2.0.54",
 ]

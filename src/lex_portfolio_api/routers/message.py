@@ -6,7 +6,11 @@ from lex_portfolio_api.schemas.message import MessageUpdate, MessageCreate, Mess
 from lex_portfolio_api.models.users import User
 from lex_portfolio_api.database import get_db
 from lex_portfolio_api.core.dependencies import get_current_user
-from lex_portfolio_api.services import message_service
+from lex_portfolio_api.core.emails import (
+    send_notification_email,
+    build_contact_email_html,
+)
+from lex_portfolio_api.services import message_service, profile_service
 
 from lex_portfolio_api.core.limiter import limiter
 
@@ -26,8 +30,22 @@ def create_message(
     request: Request, message: MessageCreate, db: Session = Depends(get_db)
 ):
     user = db.query(User).first()
+    result = message_service.create_message(message, db, user.id)
 
-    return message_service.create_message(message, db, user.id)
+    profile = profile_service.get_profile(db)
+    if profile is not None:
+        try:
+            send_notification_email(
+                to=profile.notify_email or profile.email,
+                subject=f"Nuevo mensaje de {message.name}",
+                html=build_contact_email_html(
+                    message.name, message.email, message.message, message.phone
+                ),
+            )
+        except Exception:
+            pass
+
+    return result
 
 
 @router.patch("/messages/{message_id}", response_model=MessageOut, status_code=200)
