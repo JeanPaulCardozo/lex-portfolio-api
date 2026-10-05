@@ -21,6 +21,7 @@ from lex_portfolio_api.models.case import Case
 from lex_portfolio_api.models.experience import Experience
 from lex_portfolio_api.models.publication import Publication
 from lex_portfolio_api.models.testimonial import Testimonial
+from lex_portfolio_api.models.messages import Message
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.

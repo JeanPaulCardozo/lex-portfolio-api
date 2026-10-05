@@ -20,9 +20,11 @@ router = APIRouter(prefix="/publications", tags=["publications"])
 def get_publications(db: Session = Depends(get_db)):
     return publication_service.get_publications(db)
 
+
 @router.get("/{slug}", response_model=PublicationOut, status_code=200)
-def get_publication_by_slug(slug: str,db: Session = Depends(get_db)):
-    return publication_service.get_publication_by_slug(db,slug)
+def get_publication_by_slug(slug: str, db: Session = Depends(get_db)):
+    return publication_service.get_publication_by_slug(db, slug)
+
 
 @router.post("/", response_model=PublicationOut, status_code=201)
 def create_publication(
@@ -55,7 +57,6 @@ def update_publication(
 
     if publication_by_slug is not None and publication_by_slug.id != publication_id:
         raise HTTPException(status_code=400, detail="Publication Already Exists")
-
 
     return publication_service.update_publication(db, publication, publication_id)
 

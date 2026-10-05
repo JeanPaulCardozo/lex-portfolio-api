@@ -4,6 +4,7 @@ from lex_portfolio_api.models.publication import Publication
 from lex_portfolio_api.schemas.publication import PublicationCreate, PublicationUpdate
 from lex_portfolio_api.core.slugify import slugify
 
+
 def get_publications(db: Session) -> list[Publication] | None:
     return db.query(Publication).order_by(Publication.date.desc()).all()
 
@@ -11,8 +12,10 @@ def get_publications(db: Session) -> list[Publication] | None:
 def get_publication(db: Session, publication_id: int) -> Publication | None:
     return db.query(Publication).filter(Publication.id == publication_id).first()
 
+
 def get_publication_by_slug(db: Session, slug: str) -> Publication | None:
     return db.query(Publication).filter(Publication.slug == slug).first()
+
 
 def create_publication(
     db: Session, publication_schema: PublicationCreate, user_id: int

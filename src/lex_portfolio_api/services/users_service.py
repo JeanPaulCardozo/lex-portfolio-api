@@ -37,5 +37,6 @@ def authenticate_user(db: Session, email: str, password: str) -> User | None:
 
     return user
 
+
 def any_user_exists(db: Session) -> bool:
     return db.query(User).first() is not None
